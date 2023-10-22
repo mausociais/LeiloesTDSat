@@ -1,5 +1,7 @@
+package DAO;
 
-import package.ProdutosDTO;
+
+import Controller.ProdutosDTO;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,11 +16,11 @@ import java.sql.SQLException;
     PreparedStatement st;
     ResultSet rs;
     
-    private String url = "jdbc:mysql://localhost:3306/uc11";
-    private String user = "root";
-    private String pass = "191484M@u";
+    public String url = "jdbc:mysql://localhost:3306/uc11";
+    public String user = "root";
+    public String pass = "191484M@u";
     
-    public boolean conectar(){
+    public boolean conectDB(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url,user, pass);
@@ -40,6 +42,7 @@ import java.sql.SQLException;
             }
         }
     
+    
     public static Connection Conexao() throws SQLException{
         
         try{
@@ -59,11 +62,11 @@ import java.sql.SQLException;
                 //
                 String query = "SELECT MAX(id) FROM produtos";
 
-                ResultSet resultSet = st.executeQuery(query);
+                rs = st.executeQuery(query);
 
                 int lastId = 0;
-                if (resultSet.next()) {
-                    lastId = resultSet.getInt(1);
+                if (rs.next()) {
+                    lastId = rs.getInt(1);
                 }
                 int nextId = lastId + 1;
 
@@ -81,5 +84,9 @@ import java.sql.SQLException;
 
             }
         }
+
+    Connection connectDB() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
         
 }

@@ -1,6 +1,7 @@
+package View;
 
-import package.ProdutosDTO;
-import package.conectaDAO;
+import Controller.ProdutosDTO;
+import DAO.conectaDAO;
 import javax.swing.JOptionPane;
 
 public class cadastroVIEW extends javax.swing.JFrame {
@@ -121,14 +122,13 @@ public class cadastroVIEW extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void cadastroNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastroNomeActionPerformed
                 
     }//GEN-LAST:event_cadastroNomeActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        Cadastrar();
-        
+        Cadastrar();   
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutosActionPerformed
@@ -136,7 +136,6 @@ public class cadastroVIEW extends javax.swing.JFrame {
         listagem.setVisible(true);
     }//GEN-LAST:event_btnProdutosActionPerformed
 
-   
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -166,11 +165,11 @@ public class cadastroVIEW extends javax.swing.JFrame {
         boolean status;
         int resposta;
 
-        produtos.setNome(txtNome.getText());
-        produtos.setValor(Integer.parseInt(txtValor.getText()));
+        produtos.setNome(cadastroNome.getText());
+        produtos.setValor(Integer.parseInt(cadastroValor.getText()));
         produtos.setStatus("A Venda");
 
-        status = dao.conectar();
+        status = dao.conectDB();
 
         if(status == false){
             JOptionPane.showMessageDialog(null,"Erro de conexão");
@@ -181,10 +180,10 @@ public class cadastroVIEW extends javax.swing.JFrame {
             if(resposta == 1){
                 JOptionPane.showMessageDialog(null,"Dados incluidos com sucesso");
                 //limpar os campos
-                txtValor.setText("");
-                txtNome.setText("");
+                cadastroValor.setText("");
+                cadastroNome.setText("");
                 //posicionar o cursor para um próximo
-                txtNome.requestFocus();
+                cadastroNome.requestFocus();
 
             }else{
                 JOptionPane.showMessageDialog(null,"Erro ao tentar inserir dados");
