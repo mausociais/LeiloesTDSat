@@ -1,33 +1,85 @@
 
+import Controller.ProdutosDTO;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.swing.JOptionPane;
 
 
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+    public class conectaDAO{
 
-/**
- *
- * @author Adm
- */
-public class conectaDAO {
+    Connection conn;
+    PreparedStatement st;
+    ResultSet rs;
     
-    public Connection connectDB(){
-        Connection conn = null;
-        
+    private String url = "jdbc:mysql://localhost:3306/uc11";
+    private String user = "root";
+    private String pass = "191484M@u";
+    
+    public boolean conectar(){
         try {
-        
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/uc11?user=root&password=");
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url,user, pass);
+            return true;
             
-        } catch (SQLException erro){
-            JOptionPane.showMessageDialog(null, "Erro ConectaDAO" + erro.getMessage());
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println("Erro ao conectar: " + ex.getMessage());
+            return false;
+            
         }
-        return conn;
     }
     
+    public void desconectar(){
+            try {
+                conn.close();
+
+            } catch (SQLException ex) {
+                //pode-se deixar vazio para evitar uma mensagem de erro desnecessária ao usuário
+            }
+        }
+    
+    public static Connection Conexao() throws SQLException{
+        
+        try{
+            Class.forName( "com.mysql.cj.jdbc.Driver" );
+            return DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11", "root", "191484M@u");
+        } catch (ClassNotFoundException e){
+            throw new SQLException(e.getException());
+        }
+    }
+    
+    public int salvar (ProdutosDTO produtos){
+
+            int status;
+
+            try {
+                st = conn.prepareStatement("INSERT INTO produtos VALUES(?,?,?,?)");
+                //
+                String query = "SELECT MAX(id) FROM produtos";
+
+                ResultSet resultSet = st.executeQuery(query);
+
+                int lastId = 0;
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
+                int nextId = lastId + 1;
+
+                st.setInt(1, nextId);
+                st.setString(2, produtos.getNome());
+                st.setInt(3, produtos.getValor());
+                st.setString(4, produtos.getStatus());
+
+                status = st.executeUpdate();
+                return status; //retornar 1
+
+            } catch (SQLException ex) {
+                System.out.println("Erro ao conectar: " + ex.getMessage());
+                return ex.getErrorCode();
+
+            }
+        }
+        
 }
