@@ -3,11 +3,16 @@ package View;
 import Controller.ProdutosDTO;
 import DAO.ProdutosDAO;
 import DAO.conectaDAO;
+import java.awt.Component;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -132,17 +137,17 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
+        try {
+            alteraStatus();
+            listarProdutos();
+        } catch (SQLException ex) {
+            Logger.getLogger(listagemVIEW.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-        ProdutosDAO produtosdao = new ProdutosDAO();
-        
-        produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-        vendasVIEW vendas = new vendasVIEW(); 
-        vendas.setVisible(true);
+       listarProdutosVendidos();
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -194,7 +199,7 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
 
-    public void listarProdutos(){
+    private void listarProdutos(){
          
         try{
             Connection conn = conectaDAO.Conexao();
@@ -219,5 +224,56 @@ public class listagemVIEW extends javax.swing.JFrame {
         } catch (SQLException e){
             e.printStackTrace();
         }
+    }
+    
+    public void alteraStatus() throws SQLException{
+        
+        int idProduto = Integer.parseInt(id_produto_venda.getText());
+        Connection con = conectaDAO.Conexao();
+        
+        PreparedStatement ps = null;
+        String sql = "update produtos set status = 'Vendido' where id = ?";
+
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1,idProduto);
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(null,"Dados atualizados com sucesso");
+            
+            ps.close();
+            con.close();
+            
+        } catch ( SQLException sqle ) {
+            JOptionPane.showMessageDialog(null,"Erro ao tentar inserir dados");
+        }
+        
+     }
+    private void listarProdutosVendidos (){
+         
+        try{
+            Connection conn = conectaDAO.Conexao();
+            
+            st = conn.prepareStatement("select * from produtos where status = 'Vendido'");
+            rs = st.executeQuery();
+            
+            DefaultTableModel  model = (DefaultTableModel) listaProdutos.getModel();   
+            model.setNumRows(0);
+            
+            while(rs.next()){
+                model.addRow(new Object[]{
+                rs.getString("id"),
+                rs.getString("nome"),
+                rs.getString("valor"), 
+                rs.getString("status")
+                });
+            }
+            rs.close();
+            conn.close();
+            
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+            JOptionPane.showMessageDialog(null, new JScrollPane(listaProdutos));
     }
 }

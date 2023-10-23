@@ -1,6 +1,5 @@
 package View;
 
-
 class vendasVIEW {
 
     void setVisible(boolean b) {
